@@ -30,7 +30,7 @@ mov rdx,rax ;because return value of syscall is stored in rax,
             mov rax,1
             mov rdi,1
             mov rsi,msg
-            mov rdi,len
+            mov rdx,len
             syscall
 
       PrintName Name
