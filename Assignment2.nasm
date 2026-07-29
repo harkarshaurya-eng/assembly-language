@@ -4,6 +4,7 @@ section .bss
   Name resb 50
 section .data
   msg db "Enter your name:",10
+  len equ $-msg
 %macro PrintName 1
   ;read name
   mov rax,0
