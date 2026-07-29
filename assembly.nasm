@@ -1,21 +1,64 @@
+section .bss
+  Name resb 50
+  digit resb 1
 section .data
-	msg db "BMW S1000 RR", 10 ;db -define byte:convert each char into byte
-	len equ $-msg ; len = $(ending address of the string) - msg(starting address of the string)
+	msg db "Enter your name:",10
+	len equ $-msg
 
-section .text ; executable machine instructions 
-	global _start ;this line is for the linker 
-
-_start:   ;the execution begins 
-
-	mov rax,1 ;general purpose register, rax stores system calls[0-read,1-write,]
-	mov rdi,1 ;contains first argument for the write(file decriptor, buffer, length)
-	          ;file decrypter is the small integer used by the os to identify IO stream
-		  ;0 - stdin(keyboard), 1 - stdout(terminal), 2 - stderr(terminal for error msg)
-	mov rsi,msg ; rsi contains the address where the string "..." begins 
-	mov rdx,len
+	lenMsg db "Length:"
+	lenMsglen equ $-lenMsg
+; Read string entered by the user 
+%macro ReadName 1
+	mov rax,0
+	mov rdi,0
+	mov rsi,%1
+	mov rdx, 50
 	syscall
 
-	; exit(0)
-	mov rax,60 ;rax = 60 means exit 
-	xor rdi,rdi
+	mov rdx,rax
+%endmacro
+;Normal print macro
+%macro Print 2
+	mov rax,1
+	mov rdi,1
+	mov rsi,%1
+	mov rdx,%2
 	syscall
+%endmacro
+;print the string entered by the user
+%macro PrintName 1
+	mov rax,1
+	mov rdi,1
+	mov rsi,%1
+	syscall
+%endmacro
+; macro to count the length of the string bytes read
+%macro Printlength 0
+	;rdx has the number of 
+	dec rdx ;because we clicked the enter key after putting the string 
+	add dl,'0';because linux doesn't print numbers, it prints characters so convert dl into ASCII
+	mov[digit],dl 
+
+	Print lenMsg, lenMsglen
+
+	mov rax,1
+	mov rdi,1
+	mov rsi,digit
+	mov rdx,1
+	syscall
+%endmacro
+
+  section .text
+      global _start
+
+    _start:
+
+	Print msg,len 
+	ReadName Name
+	PrintName Name
+	Printlength
+
+              
+mov rax,60
+xor rdi,rdi
+syscall
